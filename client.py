@@ -14,15 +14,29 @@ class Client:
         self.zeroconf = Zeroconf()
         # Procurar serviços do tipo _http._tcp.local.
         browser = ServiceBrowser(self.zeroconf, "_http._tcp.local.", self)
+        
+        try:
+            # Esperar indefinidamente por serviços
+            input("Pressione enter para encerrar...\n")
+        finally:
+            self.zeroconf.close()
     
     def add_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
-        if info:
+        if info and "SmartClass" in name:
             address = socket.inet_ntoa(info.addresses[0])  # Converte o endereço para string
             port = info.port
             print(f"Serviço '{name}' encontrado no endereço {address}:{port}")
-            self.connect_to_service(address, port)
+            self._connect_to_service(address, port)
+    
+    def update_service(self, zeroconf, type, name):
+        # Esse método é necessário no futuro, pode ser vazio se não for usar
+        pass
 
+    def remove_service(self, zeroconf, type, name):
+        # Código para remover serviços
+        pass
+    
     def _connect_to_service(self, address, port):
         self.channel = grpc.insecure_channel(f'{address}:{port}')
         print(f"Conectado ao serviço no endereço {address}:{port}")
