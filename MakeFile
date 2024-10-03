@@ -1,3 +1,5 @@
+all:
+	pip install -r requirements.txt
 
 compile:
 	python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. .\proto_files\smartclass.proto
@@ -7,3 +9,6 @@ s:
 
 c:
 	python client.py
+
+env:
+	.\env\Scripts\Activate.ps1
