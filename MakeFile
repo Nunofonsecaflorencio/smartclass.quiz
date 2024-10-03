@@ -1,0 +1,9 @@
+
+compile:
+	python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. .\proto_files\smartclass.proto
+
+s:
+	python server.py
+
+c:
+	python client.py
