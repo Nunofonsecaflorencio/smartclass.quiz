@@ -41,5 +41,5 @@ class Client:
 
 if __name__ == '__main__':
     client = Client()
-    client.client()
+    client.connect()
   
