@@ -3,7 +3,7 @@ syntax = "proto3";
 package smartclass;
 
 service SmartClass {
-  rpc JoinRoom (JoinRoomRequest) returns (stream JoinRoomResponse);
+  rpc joinRoom (JoinRoomRequest) returns (stream JoinRoomResponse);
   rpc getNextQuestion (NextQuestionRequest) returns (Question);
   rpc submitAnswer (Answer) returns (GameStatus);
 }

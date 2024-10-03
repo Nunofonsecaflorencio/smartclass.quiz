@@ -34,8 +34,8 @@ class SmartClassStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.JoinRoom = channel.unary_stream(
-                '/smartclass.SmartClass/JoinRoom',
+        self.joinRoom = channel.unary_stream(
+                '/smartclass.SmartClass/joinRoom',
                 request_serializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
                 _registered_method=True)
@@ -54,7 +54,7 @@ class SmartClassStub(object):
 class SmartClassServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def JoinRoom(self, request, context):
+    def joinRoom(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -75,8 +75,8 @@ class SmartClassServicer(object):
 
 def add_SmartClassServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'JoinRoom': grpc.unary_stream_rpc_method_handler(
-                    servicer.JoinRoom,
+            'joinRoom': grpc.unary_stream_rpc_method_handler(
+                    servicer.joinRoom,
                     request_deserializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.SerializeToString,
             ),
@@ -102,7 +102,7 @@ class SmartClass(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def JoinRoom(request,
+    def joinRoom(request,
             target,
             options=(),
             channel_credentials=None,
@@ -115,7 +115,7 @@ class SmartClass(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            '/smartclass.SmartClass/JoinRoom',
+            '/smartclass.SmartClass/joinRoom',
             proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
             proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
             options,

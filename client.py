@@ -1,6 +1,6 @@
 import grpc
 from zeroconf import Zeroconf, ServiceBrowser
-from proto_files import smartclass_pb2, smartclass_pb2_grpc
+from proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
 import socket
 
 class Client:
@@ -41,6 +41,10 @@ class Client:
         self.channel = grpc.insecure_channel(f'{address}:{port}')
         print(f"Conectado ao serviço no endereço {address}:{port}")
         
+        self.stub = pb2_grpc.SmartClassStub(self.channel)
+        response = self.stub.joinRoom(pb2.JoinRoomRequest(code="ABCD", player_name="Test Player Name"))
+        
+        print(f"Response: {response}")
         
     def close(self):
         self.zeroconf.close()
