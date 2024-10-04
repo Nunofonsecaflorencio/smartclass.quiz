@@ -3,9 +3,9 @@ syntax = "proto3";
 package smartclass;
 
 service SmartClass {
-  rpc joinRoom (JoinRoomRequest) returns (stream JoinRoomResponse);
-  rpc getNextQuestion (NextQuestionRequest) returns (Question);
-  rpc submitAnswer (Answer) returns (GameStatus);
+  rpc JoinRoom (JoinRoomRequest) returns (JoinRoomResponse);
+  rpc GetNextQuestion (NextQuestionRequest) returns (Question);
+  rpc SubmitAnswer (Answer) returns (GameStatus);
 }
 
 message JoinRoomRequest {
@@ -15,8 +15,9 @@ message JoinRoomRequest {
 
 message JoinRoomResponse {
   bool joined = 1;
-  int32 time = 3;
   bool start = 2;
+  int32 time = 3;
+  string message = 4;
 }
 
 message NextQuestionRequest {

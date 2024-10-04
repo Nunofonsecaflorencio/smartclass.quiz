@@ -9,6 +9,3 @@ s:
 
 c:
 	python client.py
-
-env:
-	.\env\Scripts\Activate.ps1

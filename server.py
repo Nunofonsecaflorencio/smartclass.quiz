@@ -23,13 +23,17 @@ class SmartClassServicer(pb2_grpc.SmartClassServicer):
     def submitAnswer(self, answer, context):
         return super().submitAnswer(answer, context)
     
-class Server:
+class Server(pb2_grpc.SmartClassServicer):
     def __init__(self, port=5000) -> None:
+        super().__init__()
+        self.initialize_game()
+        
         self.port = port
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        self.servicer = SmartClassServicer()
-        pb2_grpc.add_SmartClassServicer_to_server(self.servicer, self.server)
+        pb2_grpc.add_SmartClassServicer_to_server(self, self.server)
+    
         
+    def initialize_game(self):
         # bussiness logic
         self.ai = QuizGenerator()
         self.questions = self.ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
@@ -38,10 +42,11 @@ class Server:
         print(f"Quiz Room Code: {self.code}")
         self.players = {}
         
-        # Implementations
-        self.server.addPlayer = self.joinPlayer
     
-    def joinPlayer(self, code, name):
+    def JoinRoom(self, joinRoomRequest, context):
+        code, name = joinRoomRequest.code, joinRoomRequest.player_name
+        print(f"Server Side JoinRoom({code}, {name}) called.")
+        print(self.code)
         if not code.upper() == self.code:
             return pb2.JoinRoomResponse(
                 joined=False
@@ -55,6 +60,17 @@ class Server:
         
         print(f"Player {name} joined!")
         
+        return pb2.JoinRoomResponse(
+                joined=True,
+                message=f"Joined to Room {code}. Wait for the Start!"
+            )
+    
+    def GetNextQuestion(self, nextQuestionRequest, context):
+        return super().getNextQuestion(nextQuestionRequest, context)
+    
+    def SubmitAnswer(self, answer, context):
+        return super().submitAnswer(answer, context)
+    
     
     def run(self):
         self._announce_service()

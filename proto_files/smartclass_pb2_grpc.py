@@ -34,18 +34,18 @@ class SmartClassStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.joinRoom = channel.unary_stream(
-                '/smartclass.SmartClass/joinRoom',
+        self.JoinRoom = channel.unary_unary(
+                '/smartclass.SmartClass/JoinRoom',
                 request_serializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
                 _registered_method=True)
-        self.getNextQuestion = channel.unary_unary(
-                '/smartclass.SmartClass/getNextQuestion',
+        self.GetNextQuestion = channel.unary_unary(
+                '/smartclass.SmartClass/GetNextQuestion',
                 request_serializer=proto__files_dot_smartclass__pb2.NextQuestionRequest.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.Question.FromString,
                 _registered_method=True)
-        self.submitAnswer = channel.unary_unary(
-                '/smartclass.SmartClass/submitAnswer',
+        self.SubmitAnswer = channel.unary_unary(
+                '/smartclass.SmartClass/SubmitAnswer',
                 request_serializer=proto__files_dot_smartclass__pb2.Answer.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.GameStatus.FromString,
                 _registered_method=True)
@@ -54,19 +54,19 @@ class SmartClassStub(object):
 class SmartClassServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def joinRoom(self, request, context):
+    def JoinRoom(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def getNextQuestion(self, request, context):
+    def GetNextQuestion(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def submitAnswer(self, request, context):
+    def SubmitAnswer(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -75,18 +75,18 @@ class SmartClassServicer(object):
 
 def add_SmartClassServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'joinRoom': grpc.unary_stream_rpc_method_handler(
-                    servicer.joinRoom,
+            'JoinRoom': grpc.unary_unary_rpc_method_handler(
+                    servicer.JoinRoom,
                     request_deserializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.SerializeToString,
             ),
-            'getNextQuestion': grpc.unary_unary_rpc_method_handler(
-                    servicer.getNextQuestion,
+            'GetNextQuestion': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetNextQuestion,
                     request_deserializer=proto__files_dot_smartclass__pb2.NextQuestionRequest.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.Question.SerializeToString,
             ),
-            'submitAnswer': grpc.unary_unary_rpc_method_handler(
-                    servicer.submitAnswer,
+            'SubmitAnswer': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitAnswer,
                     request_deserializer=proto__files_dot_smartclass__pb2.Answer.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
             ),
@@ -102,7 +102,7 @@ class SmartClass(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def joinRoom(request,
+    def JoinRoom(request,
             target,
             options=(),
             channel_credentials=None,
@@ -112,10 +112,10 @@ class SmartClass(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(
+        return grpc.experimental.unary_unary(
             request,
             target,
-            '/smartclass.SmartClass/joinRoom',
+            '/smartclass.SmartClass/JoinRoom',
             proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
             proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
             options,
@@ -129,7 +129,7 @@ class SmartClass(object):
             _registered_method=True)
 
     @staticmethod
-    def getNextQuestion(request,
+    def GetNextQuestion(request,
             target,
             options=(),
             channel_credentials=None,
@@ -142,7 +142,7 @@ class SmartClass(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/smartclass.SmartClass/getNextQuestion',
+            '/smartclass.SmartClass/GetNextQuestion',
             proto__files_dot_smartclass__pb2.NextQuestionRequest.SerializeToString,
             proto__files_dot_smartclass__pb2.Question.FromString,
             options,
@@ -156,7 +156,7 @@ class SmartClass(object):
             _registered_method=True)
 
     @staticmethod
-    def submitAnswer(request,
+    def SubmitAnswer(request,
             target,
             options=(),
             channel_credentials=None,
@@ -169,7 +169,7 @@ class SmartClass(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/smartclass.SmartClass/submitAnswer',
+            '/smartclass.SmartClass/SubmitAnswer',
             proto__files_dot_smartclass__pb2.Answer.SerializeToString,
             proto__files_dot_smartclass__pb2.GameStatus.FromString,
             options,

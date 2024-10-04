@@ -12,7 +12,6 @@ class Client:
         
     def _discover_service(self):
         self.zeroconf = Zeroconf()
-        # Procurar serviços do tipo _http._tcp.local.
         browser = ServiceBrowser(self.zeroconf, "_http._tcp.local.", self)
         
         try:
@@ -30,11 +29,9 @@ class Client:
             self._connect_to_service(address, port)
     
     def update_service(self, zeroconf, type, name):
-        # Esse método é necessário no futuro, pode ser vazio se não for usar
         pass
 
     def remove_service(self, zeroconf, type, name):
-        # Código para remover serviços
         pass
     
     def _connect_to_service(self, address, port):
@@ -42,7 +39,7 @@ class Client:
         print(f"Conectado ao serviço no endereço {address}:{port}")
         
         self.stub = pb2_grpc.SmartClassStub(self.channel)
-        response = self.stub.joinRoom(pb2.JoinRoomRequest(code="ABCD", player_name="Test Player Name"))
+        response = self.stub.JoinRoom(pb2.JoinRoomRequest(code="ABCD", player_name="Test Player Name"))
         
         print(f"Response: {response}")
         
