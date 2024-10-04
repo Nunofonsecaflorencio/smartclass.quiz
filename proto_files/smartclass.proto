@@ -4,23 +4,22 @@ package smartclass;
 
 service SmartClass {
   rpc JoinRoom (JoinRoomRequest) returns (JoinRoomResponse);
-  rpc GetNextQuestion (NextQuestionRequest) returns (Question);
+  rpc GetNextQuestion (Player) returns (Question);
   rpc SubmitAnswer (Answer) returns (GameStatus);
+  rpc ExitRoom (Player) returns (GameStatus);
 }
 
 message JoinRoomRequest {
-  string code = 1;
-  string player_name = 2;
+  string player_name = 1;
 }
 
 message JoinRoomResponse {
   bool joined = 1;
-  bool start = 2;
-  int32 time = 3;
+  int32 game_timer = 2;
   string message = 4;
 }
 
-message NextQuestionRequest {
+message Player {
   string player_name = 1;
 }
 

@@ -1,60 +1,95 @@
 import grpc
 from zeroconf import Zeroconf, ServiceBrowser
 from proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
-import socket
+import socket, time
 
 class Client:
     def __init__(self) -> None:
-        pass
-    
-    def connect(self):
-        self._discover_service()
+        self.available_rooms = []
+        self.new_room_dicovered_callback = None
         
-    def _discover_service(self):
+    def start_room_discovery(self):
         self.zeroconf = Zeroconf()
-        browser = ServiceBrowser(self.zeroconf, "_http._tcp.local.", self)
+        print("Procurando por Salas SmartClass...")
+        ServiceBrowser(self.zeroconf, "_http._tcp.local.", self)
+            
+    # def _list_and_choose_room(self):
+    #     if not self.available_rooms:
+    #         print("Nenhuma sala SmartClass foi encontrada.")
+    #         return
         
-        try:
-            # Esperar indefinidamente por serviços
-            input("Pressione enter para encerrar...\n")
-        finally:
-            self.zeroconf.close()
-    
-    def add_service(self, zeroconf, type, name):
-        info = zeroconf.get_service_info(type, name)
-        if info and "SmartClass" in name:
-            address = socket.inet_ntoa(info.addresses[0])  # Converte o endereço para string
+    #     # List available rooms to the user
+    #     print("\nSalas SmartClass disponíveis:")
+    #     for i, (room_code, address, port) in enumerate(self.available_rooms):
+    #         print(f"{i + 1}. {room_code} ({address}:{port})")
+        
+    #     # Ask the user to select a room
+    #     try:
+    #         choice = int(input("\nEscolha uma sala pelo número (ex: 1, 2, 3): ")) - 1
+    #         if 0 <= choice < len(self.available_rooms):
+    #             selected_room = self.available_rooms[choice]
+    #             self._connect_to_room(*selected_room)
+    #         else:
+    #             print("Escolha inválida.")
+    #     except ValueError:
+    #         print("Entrada inválida. Por favor, insira um número válido.")
+            
+            
+    def add_service(self, zeroconf, service_type, name):
+        info = zeroconf.get_service_info(service_type, name)
+        
+        if info and "SmartClass." in name:
+            # Extract the room code from the service name
+            room_code = name.split(".")[1]
+            
+            # Retrieve address and port
+            address = socket.inet_ntoa(info.addresses[0])  # Convert address to string
             port = info.port
-            print(f"Serviço '{name}' encontrado no endereço {address}:{port}")
-            self._connect_to_service(address, port)
+            
+            # Add the room information to available_rooms
+            self.available_rooms.append((room_code, address, port))
+            if self.new_room_dicovered_callback:
+                self.new_room_dicovered_callback(room_code, self.available_rooms)
     
+    
+    def connect_to_room(self, room):
+        room_code, address, port = room
+        self.channel = grpc.insecure_channel(f'{address}:{port}')
+        print(f"Conectado à Sala {room_code} ({address}:{port})")
+        self.stub = pb2_grpc.SmartClassStub(self.channel)
+        
+    def stop_room_discovery(self):
+        self.zeroconf.close()
+        return self.available_rooms
+
     def update_service(self, zeroconf, type, name):
         pass
 
     def remove_service(self, zeroconf, type, name):
         pass
     
-    def _connect_to_service(self, address, port):
-        self.channel = grpc.insecure_channel(f'{address}:{port}')
-        print(f"Conectado ao serviço no endereço {address}:{port}")
-        
-        self.stub = pb2_grpc.SmartClassStub(self.channel)
-        response = self.stub.JoinRoom(pb2.JoinRoomRequest(code="ABCD", player_name="Test Player Name"))
-        
-        print(f"Response: {response}")
-        
-    def close(self):
-        self.zeroconf.close()
+    def join_player(self, name):
+        if not self.stub:
+            print("Ainda não se conectou à uma sala.")
+            return
+        response = self.stub.JoinRoom(pb2.JoinRoomRequest(player_name=name))
+        return response.joined, response.game_timer, response.message
 
+    def remove_player(self, name):
+        response = self.stub.ExitRoom(pb2.Player(player_name=name))
+        return response.score
 
-# def run(num1, num2):
-#     with grpc.insecure_channel('localhost:5000') as channel:
-#         stub = calculator_pb2_grpc.CalculatorStub(channel)
-#         response = stub.Add(calculator_pb2.AddRequest(num1=num1, num2=num2))
-#     print(f"Result: {response.result}")
-
+        
 
 if __name__ == '__main__':
     client = Client()
-    client.connect()
-  
+    client.start_room_discovery()
+    client.new_room_dicovered_callback = lambda room, _: print(f"Room {room} discovered!")
+    time.sleep(5)
+    rooms = client.stop_room_discovery()
+    print(rooms)
+    if rooms:
+        client.connect_to_room(rooms[0])
+        client.join_player("Nuno Fonseca Florêncio")
+        time.sleep(5)
+        client.remove_player("Nuno Fonseca Florêncio")

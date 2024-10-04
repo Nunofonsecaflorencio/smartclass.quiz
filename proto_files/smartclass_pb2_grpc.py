@@ -41,12 +41,17 @@ class SmartClassStub(object):
                 _registered_method=True)
         self.GetNextQuestion = channel.unary_unary(
                 '/smartclass.SmartClass/GetNextQuestion',
-                request_serializer=proto__files_dot_smartclass__pb2.NextQuestionRequest.SerializeToString,
+                request_serializer=proto__files_dot_smartclass__pb2.Player.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.Question.FromString,
                 _registered_method=True)
         self.SubmitAnswer = channel.unary_unary(
                 '/smartclass.SmartClass/SubmitAnswer',
                 request_serializer=proto__files_dot_smartclass__pb2.Answer.SerializeToString,
+                response_deserializer=proto__files_dot_smartclass__pb2.GameStatus.FromString,
+                _registered_method=True)
+        self.ExitRoom = channel.unary_unary(
+                '/smartclass.SmartClass/ExitRoom',
+                request_serializer=proto__files_dot_smartclass__pb2.Player.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.GameStatus.FromString,
                 _registered_method=True)
 
@@ -72,6 +77,12 @@ class SmartClassServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ExitRoom(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SmartClassServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -82,12 +93,17 @@ def add_SmartClassServicer_to_server(servicer, server):
             ),
             'GetNextQuestion': grpc.unary_unary_rpc_method_handler(
                     servicer.GetNextQuestion,
-                    request_deserializer=proto__files_dot_smartclass__pb2.NextQuestionRequest.FromString,
+                    request_deserializer=proto__files_dot_smartclass__pb2.Player.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.Question.SerializeToString,
             ),
             'SubmitAnswer': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitAnswer,
                     request_deserializer=proto__files_dot_smartclass__pb2.Answer.FromString,
+                    response_serializer=proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
+            ),
+            'ExitRoom': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExitRoom,
+                    request_deserializer=proto__files_dot_smartclass__pb2.Player.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
             ),
     }
@@ -143,7 +159,7 @@ class SmartClass(object):
             request,
             target,
             '/smartclass.SmartClass/GetNextQuestion',
-            proto__files_dot_smartclass__pb2.NextQuestionRequest.SerializeToString,
+            proto__files_dot_smartclass__pb2.Player.SerializeToString,
             proto__files_dot_smartclass__pb2.Question.FromString,
             options,
             channel_credentials,
@@ -171,6 +187,33 @@ class SmartClass(object):
             target,
             '/smartclass.SmartClass/SubmitAnswer',
             proto__files_dot_smartclass__pb2.Answer.SerializeToString,
+            proto__files_dot_smartclass__pb2.GameStatus.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ExitRoom(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/smartclass.SmartClass/ExitRoom',
+            proto__files_dot_smartclass__pb2.Player.SerializeToString,
             proto__files_dot_smartclass__pb2.GameStatus.FromString,
             options,
             channel_credentials,

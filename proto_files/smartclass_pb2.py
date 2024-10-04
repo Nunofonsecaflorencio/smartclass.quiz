@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1cproto_files/smartclass.proto\x12\nsmartclass\"4\n\x0fJoinRoomRequest\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x13\n\x0bplayer_name\x18\x02 \x01(\t\"P\n\x10JoinRoomResponse\x12\x0e\n\x06joined\x18\x01 \x01(\x08\x12\r\n\x05start\x18\x02 \x01(\x08\x12\x0c\n\x04time\x18\x03 \x01(\x05\x12\x0f\n\x07message\x18\x04 \x01(\t\"*\n\x13NextQuestionRequest\x12\x13\n\x0bplayer_name\x18\x01 \x01(\t\"=\n\x08Question\x12\x10\n\x08question\x18\x01 \x01(\t\x12\x0f\n\x07options\x18\x02 \x03(\t\x12\x0e\n\x06\x61nswer\x18\x03 \x01(\t\"0\n\x06\x41nswer\x12\x13\n\x0bplayer_name\x18\x01 \x01(\t\x12\x11\n\tisCorrect\x18\x02 \x01(\x08\"*\n\nGameStatus\x12\r\n\x05isEnd\x18\x01 \x01(\x08\x12\r\n\x05score\x18\x02 \x01(\x05\x32\xd9\x01\n\nSmartClass\x12\x45\n\x08JoinRoom\x12\x1b.smartclass.JoinRoomRequest\x1a\x1c.smartclass.JoinRoomResponse\x12H\n\x0fGetNextQuestion\x12\x1f.smartclass.NextQuestionRequest\x1a\x14.smartclass.Question\x12:\n\x0cSubmitAnswer\x12\x12.smartclass.Answer\x1a\x16.smartclass.GameStatusb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1cproto_files/smartclass.proto\x12\nsmartclass\"&\n\x0fJoinRoomRequest\x12\x13\n\x0bplayer_name\x18\x01 \x01(\t\"G\n\x10JoinRoomResponse\x12\x0e\n\x06joined\x18\x01 \x01(\x08\x12\x12\n\ngame_timer\x18\x02 \x01(\x05\x12\x0f\n\x07message\x18\x04 \x01(\t\"\x1d\n\x06Player\x12\x13\n\x0bplayer_name\x18\x01 \x01(\t\"=\n\x08Question\x12\x10\n\x08question\x18\x01 \x01(\t\x12\x0f\n\x07options\x18\x02 \x03(\t\x12\x0e\n\x06\x61nswer\x18\x03 \x01(\t\"0\n\x06\x41nswer\x12\x13\n\x0bplayer_name\x18\x01 \x01(\t\x12\x11\n\tisCorrect\x18\x02 \x01(\x08\"*\n\nGameStatus\x12\r\n\x05isEnd\x18\x01 \x01(\x08\x12\r\n\x05score\x18\x02 \x01(\x05\x32\x84\x02\n\nSmartClass\x12\x45\n\x08JoinRoom\x12\x1b.smartclass.JoinRoomRequest\x1a\x1c.smartclass.JoinRoomResponse\x12;\n\x0fGetNextQuestion\x12\x12.smartclass.Player\x1a\x14.smartclass.Question\x12:\n\x0cSubmitAnswer\x12\x12.smartclass.Answer\x1a\x16.smartclass.GameStatus\x12\x36\n\x08\x45xitRoom\x12\x12.smartclass.Player\x1a\x16.smartclass.GameStatusb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,17 +32,17 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto_files.smartclass_pb2'
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_JOINROOMREQUEST']._serialized_start=44
-  _globals['_JOINROOMREQUEST']._serialized_end=96
-  _globals['_JOINROOMRESPONSE']._serialized_start=98
-  _globals['_JOINROOMRESPONSE']._serialized_end=178
-  _globals['_NEXTQUESTIONREQUEST']._serialized_start=180
-  _globals['_NEXTQUESTIONREQUEST']._serialized_end=222
-  _globals['_QUESTION']._serialized_start=224
-  _globals['_QUESTION']._serialized_end=285
-  _globals['_ANSWER']._serialized_start=287
-  _globals['_ANSWER']._serialized_end=335
-  _globals['_GAMESTATUS']._serialized_start=337
-  _globals['_GAMESTATUS']._serialized_end=379
-  _globals['_SMARTCLASS']._serialized_start=382
-  _globals['_SMARTCLASS']._serialized_end=599
+  _globals['_JOINROOMREQUEST']._serialized_end=82
+  _globals['_JOINROOMRESPONSE']._serialized_start=84
+  _globals['_JOINROOMRESPONSE']._serialized_end=155
+  _globals['_PLAYER']._serialized_start=157
+  _globals['_PLAYER']._serialized_end=186
+  _globals['_QUESTION']._serialized_start=188
+  _globals['_QUESTION']._serialized_end=249
+  _globals['_ANSWER']._serialized_start=251
+  _globals['_ANSWER']._serialized_end=299
+  _globals['_GAMESTATUS']._serialized_start=301
+  _globals['_GAMESTATUS']._serialized_end=343
+  _globals['_SMARTCLASS']._serialized_start=346
+  _globals['_SMARTCLASS']._serialized_end=606
 # @@protoc_insertion_point(module_scope)

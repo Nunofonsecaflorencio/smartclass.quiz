@@ -1,34 +1,20 @@
 import grpc
 from concurrent import futures
 from zeroconf import ServiceInfo, Zeroconf
-import uuid
+import shortuuid
+import socket
 
 from proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
 from ai.quiz_generator import QuizGenerator
 
-
-class SmartClassServicer(pb2_grpc.SmartClassServicer):
-    def __init__(self) -> None:
-        super().__init__()
-        self.addPlayer = None
-        
-        
-    def joinRoom(self, joinRoomRequest, context):
-        response = self.addPlayer(joinRoomRequest.code, joinRoomRequest.player_name)
-        return response
-    
-    def getNextQuestion(self, nextQuestionRequest, context):
-        return super().getNextQuestion(nextQuestionRequest, context)
-    
-    def submitAnswer(self, answer, context):
-        return super().submitAnswer(answer, context)
     
 class Server(pb2_grpc.SmartClassServicer):
-    def __init__(self, port=5000) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.initialize_game()
         
-        self.port = port
+        self.ip = socket.gethostbyname(socket.gethostname())
+        self.port = self.find_free_port()
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         pb2_grpc.add_SmartClassServicer_to_server(self, self.server)
     
@@ -38,38 +24,44 @@ class Server(pb2_grpc.SmartClassServicer):
         self.ai = QuizGenerator()
         self.questions = self.ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
         
-        self.code = "ABCD" # str(uuid.uuid4()).split('-')[1].upper()
-        print(f"Quiz Room Code: {self.code}")
+        self.room_code = str(shortuuid.ShortUUID().random(length=4)).upper()
         self.players = {}
         
     
     def JoinRoom(self, joinRoomRequest, context):
-        code, name = joinRoomRequest.code, joinRoomRequest.player_name
-        print(f"Server Side JoinRoom({code}, {name}) called.")
-        print(self.code)
-        if not code.upper() == self.code:
+
+        if joinRoomRequest.player_name in self.players:
             return pb2.JoinRoomResponse(
-                joined=False
+                joined=False,
+                message=f"Player {joinRoomRequest.player_name} already exists in the room!"
             )
-        # TODO: Validar nomes de jogadores duplicados
         
-        self.players[name] = {
+        self.players[joinRoomRequest.player_name] = {
             'score': 0,
             'question_index': 0,
         }
         
-        print(f"Player {name} joined!")
+        print(f"Player {joinRoomRequest.player_name} joined!")
         
         return pb2.JoinRoomResponse(
                 joined=True,
-                message=f"Joined to Room {code}. Wait for the Start!"
+                message=f"Joined to Room {self.room_code}. Wait for the Start!"
             )
     
-    def GetNextQuestion(self, nextQuestionRequest, context):
-        return super().getNextQuestion(nextQuestionRequest, context)
+    def GetNextQuestion(self, Player, context):
+        return super().getNextQuestion(Player, context)
     
     def SubmitAnswer(self, answer, context):
         return super().submitAnswer(answer, context)
+    
+    def ExitRoom(self, Player, context):
+        if not Player.player_name in self.players:
+            return pb2.GameStatus(score=-1)
+        
+        player = self.players.pop(Player.player_name)
+        print(f"{Player.player_name} is out of the room")
+        return pb2.GameStatus(score=player['score'])
+        
     
     
     def run(self):
@@ -81,16 +73,12 @@ class Server(pb2_grpc.SmartClassServicer):
     
     def _announce_service(self):
         self.zeroconf = Zeroconf()
-
-        # Obtém o IP local do servidor
-        import socket
-        self.ip = socket.gethostbyname(socket.gethostname())
         self.address = socket.inet_aton(self.ip)
 
         # Detalhes do serviço
         self.service_info = ServiceInfo(
             "_http._tcp.local.",
-            "SmartClass._http._tcp.local.",
+            f"SmartClass.{self.room_code}._http._tcp.local.",
             addresses=[self.address], 
             port=self.port, 
             properties={},
@@ -98,8 +86,28 @@ class Server(pb2_grpc.SmartClassServicer):
 
         # Registrar o serviço
         self.zeroconf.register_service(self.service_info)
-        print(f"Serviço registrado como 'SmartClass' no IP {self.ip}")
+        print(f"Serviço registrado como 'SmartClass.{self.room_code}' no IP {self.ip}")
+        
+    def find_free_port(self, start_port=1024, max_port=65535):
+        """
+        Find a free port starting from the specified start_port.
 
+        :param start_port: The port to start checking from.
+        :param max_port: The maximum port number to check.
+        :return: A free port number, or None if no free port is found.
+        """
+        for port in range(start_port, max_port + 1):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                try:
+                    # Try binding to the port
+                    sock.bind((self.ip, port))
+                    # If successful, return the port number
+                    return port
+                except OSError:
+                    # If binding failed, the port is likely in use, continue to next port
+                    continue
+        return None
+    
     def close(self):
         self.zeroconf.unregister_service(self.service_info)
         self.zeroconf.close()        
