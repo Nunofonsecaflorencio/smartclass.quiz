@@ -3,12 +3,12 @@ from zeroconf import Zeroconf, ServiceBrowser
 from .proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
 import socket, time
 
-class Client:
+class Client(ServiceBrowser):
     def __init__(self) -> None:
         self.player_name = None
         
         self.available_rooms = []
-        self.new_room_dicovered_callback = None
+        self.room_dicovered_callback = None
         self.stub = None
         self.channel = None
         
@@ -29,9 +29,9 @@ class Client:
             port = info.port
             
             # Add the room information to available_rooms
-            self.available_rooms.append((room_code, address, port))
-            if self.new_room_dicovered_callback:
-                self.new_room_dicovered_callback(room_code, self.available_rooms)
+            self.available_rooms.append(room_code)
+            if self.room_dicovered_callback:
+                self.room_dicovered_callback(room_code, self.available_rooms)
     
     
     def connect_to_room(self, room):
@@ -48,10 +48,21 @@ class Client:
         return self.available_rooms
 
     def update_service(self, zeroconf, type, name):
-        pass
+        print(f"UPDATE {name}")
+    
+    def removeService(self, server, type, name):
+        print(f"REMOVE {name}")
 
     def remove_service(self, zeroconf, type, name):
-        pass
+        service_info = zeroconf.get_service_info(type, name)
+        if service_info:
+            room_code = name.split(".")[1]
+            if room_code in self.available_rooms:
+                self.available_rooms.pop(room_code)
+                print(room_code)
+                if self.room_dicovered_callback:
+                    self.room_dicovered_callback(None, self.available_rooms)
+            
     
     def set_player_name(self, name):
         self.player_name = name

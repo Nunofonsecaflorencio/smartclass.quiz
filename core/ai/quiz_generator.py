@@ -9,10 +9,13 @@ class QuizGenerator:
         genai.configure(api_key=API_KEY)
         self.model = genai.GenerativeModel(model_name="gemini-1.5-flash")
         
-    def generate_and_save(self, input_file_path, output_file_path):
+    def generate_and_save(self, input_file_path, output_file_path, callback=None):
         response = self._generate(input_file_path)
         quiz_data = json.loads(response)
         self._save(quiz_data, output_file_path)
+        
+        if callback:
+            callback()
 
     def _generate(self, file_path):
         file = genai.upload_file(file_path)

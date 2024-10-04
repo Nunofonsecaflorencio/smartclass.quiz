@@ -10,8 +10,8 @@ class Server(pb2_grpc.SmartClassServicer):
     def __init__(self, quiz_data) -> None:
         super().__init__()
         
-        self.quiz_topic = "Quiz Topic" # TODO: Dizer Gemini fornecer o tópico (quiz['topic'])
-        self.quizzes = quiz_data # quiz_data['quizzes']
+        self.quiz_topic = quiz_data['topic'] 
+        self.quizzes = quiz_data['quizzes']
         self.room_code = str(shortuuid.ShortUUID().random(length=4)).upper()
         self.players = {}
         
@@ -122,12 +122,5 @@ class Server(pb2_grpc.SmartClassServicer):
     def close(self):
         self.zeroconf.unregister_service(self.service_info)
         self.zeroconf.close() 
-        self.server.close()       
-
-
-# if __name__ == '__main__':
-#     ai = QuizGenerator()
-#     quiz = ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
-    
-#     server = Server(quiz)
-#     server.start()
+        self.server.stop(0)      
+        print(f"Server {self.room_code} stopped!") 
