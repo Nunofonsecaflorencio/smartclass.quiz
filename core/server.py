@@ -3,9 +3,7 @@ from concurrent import futures
 from zeroconf import ServiceInfo, Zeroconf
 import shortuuid
 import socket
-
-from proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
-from ai.quiz_generator import QuizGenerator
+from .proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
 
     
 class Server(pb2_grpc.SmartClassServicer):
@@ -127,9 +125,9 @@ class Server(pb2_grpc.SmartClassServicer):
         self.server.close()       
 
 
-if __name__ == '__main__':
-    ai = QuizGenerator()
-    quiz = ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
+# if __name__ == '__main__':
+#     ai = QuizGenerator()
+#     quiz = ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
     
-    server = Server(quiz)
-    server.start()
+#     server = Server(quiz)
+#     server.start()

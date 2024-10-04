@@ -1,6 +1,6 @@
 import grpc
 from zeroconf import Zeroconf, ServiceBrowser
-from proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
+from .proto_files import smartclass_pb2 as pb2, smartclass_pb2_grpc as pb2_grpc
 import socket, time
 
 class Client:
@@ -16,28 +16,6 @@ class Client:
         self.zeroconf = Zeroconf()
         print("Procurando por Salas SmartClass...")
         ServiceBrowser(self.zeroconf, "_http._tcp.local.", self)
-            
-    # def _list_and_choose_room(self):
-    #     if not self.available_rooms:
-    #         print("Nenhuma sala SmartClass foi encontrada.")
-    #         return
-        
-    #     # List available rooms to the user
-    #     print("\nSalas SmartClass disponíveis:")
-    #     for i, (room_code, address, port) in enumerate(self.available_rooms):
-    #         print(f"{i + 1}. {room_code} ({address}:{port})")
-        
-    #     # Ask the user to select a room
-    #     try:
-    #         choice = int(input("\nEscolha uma sala pelo número (ex: 1, 2, 3): ")) - 1
-    #         if 0 <= choice < len(self.available_rooms):
-    #             selected_room = self.available_rooms[choice]
-    #             self._connect_to_room(*selected_room)
-    #         else:
-    #             print("Escolha inválida.")
-    #     except ValueError:
-    #         print("Entrada inválida. Por favor, insira um número válido.")
-            
             
     def add_service(self, zeroconf, service_type, name):
         info = zeroconf.get_service_info(service_type, name)

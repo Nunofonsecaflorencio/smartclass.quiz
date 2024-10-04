@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from proto_files import smartclass_pb2 as proto__files_dot_smartclass__pb2
+from core.proto_files import smartclass_pb2 as core_dot_proto__files_dot_smartclass__pb2
 
 GRPC_GENERATED_VERSION = '1.66.2'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in proto_files/smartclass_pb2_grpc.py depends on'
+        + f' but the generated code in core/proto_files/smartclass_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,23 +36,23 @@ class SmartClassStub(object):
         """
         self.JoinRoom = channel.unary_unary(
                 '/smartclass.SmartClass/JoinRoom',
-                request_serializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
-                response_deserializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
+                request_serializer=core_dot_proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
+                response_deserializer=core_dot_proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
                 _registered_method=True)
         self.GetQuiz = channel.unary_unary(
                 '/smartclass.SmartClass/GetQuiz',
-                request_serializer=proto__files_dot_smartclass__pb2.Player.SerializeToString,
-                response_deserializer=proto__files_dot_smartclass__pb2.Quiz.FromString,
+                request_serializer=core_dot_proto__files_dot_smartclass__pb2.Player.SerializeToString,
+                response_deserializer=core_dot_proto__files_dot_smartclass__pb2.Quiz.FromString,
                 _registered_method=True)
         self.SubmitAnswer = channel.unary_unary(
                 '/smartclass.SmartClass/SubmitAnswer',
-                request_serializer=proto__files_dot_smartclass__pb2.Answer.SerializeToString,
-                response_deserializer=proto__files_dot_smartclass__pb2.GameStatus.FromString,
+                request_serializer=core_dot_proto__files_dot_smartclass__pb2.Answer.SerializeToString,
+                response_deserializer=core_dot_proto__files_dot_smartclass__pb2.GameStatus.FromString,
                 _registered_method=True)
         self.ExitRoom = channel.unary_unary(
                 '/smartclass.SmartClass/ExitRoom',
-                request_serializer=proto__files_dot_smartclass__pb2.Player.SerializeToString,
-                response_deserializer=proto__files_dot_smartclass__pb2.GameStatus.FromString,
+                request_serializer=core_dot_proto__files_dot_smartclass__pb2.Player.SerializeToString,
+                response_deserializer=core_dot_proto__files_dot_smartclass__pb2.GameStatus.FromString,
                 _registered_method=True)
 
 
@@ -88,23 +88,23 @@ def add_SmartClassServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'JoinRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.JoinRoom,
-                    request_deserializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.FromString,
-                    response_serializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.SerializeToString,
+                    request_deserializer=core_dot_proto__files_dot_smartclass__pb2.JoinRoomRequest.FromString,
+                    response_serializer=core_dot_proto__files_dot_smartclass__pb2.JoinRoomResponse.SerializeToString,
             ),
             'GetQuiz': grpc.unary_unary_rpc_method_handler(
                     servicer.GetQuiz,
-                    request_deserializer=proto__files_dot_smartclass__pb2.Player.FromString,
-                    response_serializer=proto__files_dot_smartclass__pb2.Quiz.SerializeToString,
+                    request_deserializer=core_dot_proto__files_dot_smartclass__pb2.Player.FromString,
+                    response_serializer=core_dot_proto__files_dot_smartclass__pb2.Quiz.SerializeToString,
             ),
             'SubmitAnswer': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitAnswer,
-                    request_deserializer=proto__files_dot_smartclass__pb2.Answer.FromString,
-                    response_serializer=proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
+                    request_deserializer=core_dot_proto__files_dot_smartclass__pb2.Answer.FromString,
+                    response_serializer=core_dot_proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
             ),
             'ExitRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.ExitRoom,
-                    request_deserializer=proto__files_dot_smartclass__pb2.Player.FromString,
-                    response_serializer=proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
+                    request_deserializer=core_dot_proto__files_dot_smartclass__pb2.Player.FromString,
+                    response_serializer=core_dot_proto__files_dot_smartclass__pb2.GameStatus.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -132,8 +132,8 @@ class SmartClass(object):
             request,
             target,
             '/smartclass.SmartClass/JoinRoom',
-            proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
-            proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
+            core_dot_proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
+            core_dot_proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -159,8 +159,8 @@ class SmartClass(object):
             request,
             target,
             '/smartclass.SmartClass/GetQuiz',
-            proto__files_dot_smartclass__pb2.Player.SerializeToString,
-            proto__files_dot_smartclass__pb2.Quiz.FromString,
+            core_dot_proto__files_dot_smartclass__pb2.Player.SerializeToString,
+            core_dot_proto__files_dot_smartclass__pb2.Quiz.FromString,
             options,
             channel_credentials,
             insecure,
@@ -186,8 +186,8 @@ class SmartClass(object):
             request,
             target,
             '/smartclass.SmartClass/SubmitAnswer',
-            proto__files_dot_smartclass__pb2.Answer.SerializeToString,
-            proto__files_dot_smartclass__pb2.GameStatus.FromString,
+            core_dot_proto__files_dot_smartclass__pb2.Answer.SerializeToString,
+            core_dot_proto__files_dot_smartclass__pb2.GameStatus.FromString,
             options,
             channel_credentials,
             insecure,
@@ -213,8 +213,8 @@ class SmartClass(object):
             request,
             target,
             '/smartclass.SmartClass/ExitRoom',
-            proto__files_dot_smartclass__pb2.Player.SerializeToString,
-            proto__files_dot_smartclass__pb2.GameStatus.FromString,
+            core_dot_proto__files_dot_smartclass__pb2.Player.SerializeToString,
+            core_dot_proto__files_dot_smartclass__pb2.GameStatus.FromString,
             options,
             channel_credentials,
             insecure,
