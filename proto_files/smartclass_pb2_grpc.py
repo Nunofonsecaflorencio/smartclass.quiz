@@ -39,10 +39,10 @@ class SmartClassStub(object):
                 request_serializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.SerializeToString,
                 response_deserializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.FromString,
                 _registered_method=True)
-        self.GetNextQuestion = channel.unary_unary(
-                '/smartclass.SmartClass/GetNextQuestion',
+        self.GetQuiz = channel.unary_unary(
+                '/smartclass.SmartClass/GetQuiz',
                 request_serializer=proto__files_dot_smartclass__pb2.Player.SerializeToString,
-                response_deserializer=proto__files_dot_smartclass__pb2.Question.FromString,
+                response_deserializer=proto__files_dot_smartclass__pb2.Quiz.FromString,
                 _registered_method=True)
         self.SubmitAnswer = channel.unary_unary(
                 '/smartclass.SmartClass/SubmitAnswer',
@@ -65,7 +65,7 @@ class SmartClassServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetNextQuestion(self, request, context):
+    def GetQuiz(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -91,10 +91,10 @@ def add_SmartClassServicer_to_server(servicer, server):
                     request_deserializer=proto__files_dot_smartclass__pb2.JoinRoomRequest.FromString,
                     response_serializer=proto__files_dot_smartclass__pb2.JoinRoomResponse.SerializeToString,
             ),
-            'GetNextQuestion': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetNextQuestion,
+            'GetQuiz': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetQuiz,
                     request_deserializer=proto__files_dot_smartclass__pb2.Player.FromString,
-                    response_serializer=proto__files_dot_smartclass__pb2.Question.SerializeToString,
+                    response_serializer=proto__files_dot_smartclass__pb2.Quiz.SerializeToString,
             ),
             'SubmitAnswer': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitAnswer,
@@ -145,7 +145,7 @@ class SmartClass(object):
             _registered_method=True)
 
     @staticmethod
-    def GetNextQuestion(request,
+    def GetQuiz(request,
             target,
             options=(),
             channel_credentials=None,
@@ -158,9 +158,9 @@ class SmartClass(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/smartclass.SmartClass/GetNextQuestion',
+            '/smartclass.SmartClass/GetQuiz',
             proto__files_dot_smartclass__pb2.Player.SerializeToString,
-            proto__files_dot_smartclass__pb2.Question.FromString,
+            proto__files_dot_smartclass__pb2.Quiz.FromString,
             options,
             channel_credentials,
             insecure,

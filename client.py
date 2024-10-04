@@ -5,8 +5,12 @@ import socket, time
 
 class Client:
     def __init__(self) -> None:
+        self.player_name = None
+        
         self.available_rooms = []
         self.new_room_dicovered_callback = None
+        self.stub = None
+        self.channel = None
         
     def start_room_discovery(self):
         self.zeroconf = Zeroconf()
@@ -53,6 +57,9 @@ class Client:
     
     
     def connect_to_room(self, room):
+        if self.channel:
+            self.channel.close()
+        
         room_code, address, port = room
         self.channel = grpc.insecure_channel(f'{address}:{port}')
         print(f"Conectado à Sala {room_code} ({address}:{port})")
@@ -68,18 +75,37 @@ class Client:
     def remove_service(self, zeroconf, type, name):
         pass
     
-    def join_player(self, name):
+    def set_player_name(self, name):
+        self.player_name = name
+    
+    def join(self):
         if not self.stub:
             print("Ainda não se conectou à uma sala.")
             return
-        response = self.stub.JoinRoom(pb2.JoinRoomRequest(player_name=name))
-        return response.joined, response.game_timer, response.message
+        response = self.stub.JoinRoom(pb2.JoinRoomRequest(player_name=self.player_name))
+        return response.joined, response.topic, response.game_timer, response.message
 
-    def remove_player(self, name):
-        response = self.stub.ExitRoom(pb2.Player(player_name=name))
+    def quit(self):
+        response = self.stub.ExitRoom(pb2.Player(player_name=self.player_name))
         return response.score
 
+    def getQuiz(self):
+        response = self.stub.GetQuiz(pb2.Player(player_name=self.player_name))
+        return {
+            'question': response.question,
+            'options': response.options,
+            'answer': response.answer
+        }
         
+    def submitAnswer(self, quiz, answer):      
+        response = self.stub.SubmitAnswer(pb2.Answer(
+            player_name=self.player_name, 
+            isCorrect=quiz["answer"] == answer
+        ))
+        
+        return response.score, response.isOver
+        
+            
 
 if __name__ == '__main__':
     client = Client()
@@ -90,6 +116,12 @@ if __name__ == '__main__':
     print(rooms)
     if rooms:
         client.connect_to_room(rooms[0])
-        client.join_player("Nuno Fonseca Florêncio")
-        time.sleep(5)
-        client.remove_player("Nuno Fonseca Florêncio")
+        client.set_player_name("Nuno Fonseca Florêncio")
+        client.join()
+        while True:
+            quiz = client.getQuiz()
+            s, o = client.submitAnswer(quiz, 'Uma arquitetura onde os componentes estão localizados em um único ponto central.')
+            print(s, o)
+            if o:
+                client.quit()
+                break

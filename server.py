@@ -9,23 +9,28 @@ from ai.quiz_generator import QuizGenerator
 
     
 class Server(pb2_grpc.SmartClassServicer):
-    def __init__(self) -> None:
+    def __init__(self, quiz_data) -> None:
         super().__init__()
-        self.initialize_game()
         
+        self.quiz_topic = "Quiz Topic" # TODO: Dizer Gemini fornecer o tópico (quiz['topic'])
+        self.quizzes = quiz_data # quiz_data['quizzes']
+        self.room_code = str(shortuuid.ShortUUID().random(length=4)).upper()
+        self.players = {}
+        
+        
+    def start(self):
+        self._initialize_grpc_server()
+        self._announce_service()
+        self.server.add_insecure_port(f'{self.ip}:{self.port}')
+        self.server.start()
+        print(f"Server is listening on port {self.port}...")
+        self.server.wait_for_termination()    
+        
+    def _initialize_grpc_server(self):
         self.ip = socket.gethostbyname(socket.gethostname())
         self.port = self.find_free_port()
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         pb2_grpc.add_SmartClassServicer_to_server(self, self.server)
-    
-        
-    def initialize_game(self):
-        # bussiness logic
-        self.ai = QuizGenerator()
-        self.questions = self.ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
-        
-        self.room_code = str(shortuuid.ShortUUID().random(length=4)).upper()
-        self.players = {}
         
     
     def JoinRoom(self, joinRoomRequest, context):
@@ -38,21 +43,41 @@ class Server(pb2_grpc.SmartClassServicer):
         
         self.players[joinRoomRequest.player_name] = {
             'score': 0,
-            'question_index': 0,
+            'index': 0,
         }
         
         print(f"Player {joinRoomRequest.player_name} joined!")
         
         return pb2.JoinRoomResponse(
                 joined=True,
+                topic=self.quiz_topic,
                 message=f"Joined to Room {self.room_code}. Wait for the Start!"
             )
     
-    def GetNextQuestion(self, Player, context):
-        return super().getNextQuestion(Player, context)
+    def GetQuiz(self, Player, context):
+        # TODO: Validação
+        
+        i = self.players[Player.player_name]['index']
+        quiz = self.quizzes[i]
+        
+        return pb2.Quiz(
+            question=quiz["question"],
+            options=quiz["options"],
+            answer=quiz["answer"]
+        )
     
-    def SubmitAnswer(self, answer, context):
-        return super().submitAnswer(answer, context)
+    def SubmitAnswer(self, Answer, context):
+        player = self.players[Answer.player_name]
+        if Answer.isCorrect:
+            player['score'] += 1
+        player['index'] += 1
+        
+        print(player)
+        
+        return pb2.GameStatus(
+            isOver=player['index'] >= len(self.quizzes),
+            score=player['score']
+        )
     
     def ExitRoom(self, Player, context):
         if not Player.player_name in self.players:
@@ -61,15 +86,7 @@ class Server(pb2_grpc.SmartClassServicer):
         player = self.players.pop(Player.player_name)
         print(f"{Player.player_name} is out of the room")
         return pb2.GameStatus(score=player['score'])
-        
     
-    
-    def run(self):
-        self._announce_service()
-        self.server.add_insecure_port(f'{self.ip}:{self.port}')
-        self.server.start()
-        print(f"Server is listening on port {self.port}...")
-        self.server.wait_for_termination()
     
     def _announce_service(self):
         self.zeroconf = Zeroconf()
@@ -91,10 +108,6 @@ class Server(pb2_grpc.SmartClassServicer):
     def find_free_port(self, start_port=1024, max_port=65535):
         """
         Find a free port starting from the specified start_port.
-
-        :param start_port: The port to start checking from.
-        :param max_port: The maximum port number to check.
-        :return: A free port number, or None if no free port is found.
         """
         for port in range(start_port, max_port + 1):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -110,9 +123,13 @@ class Server(pb2_grpc.SmartClassServicer):
     
     def close(self):
         self.zeroconf.unregister_service(self.service_info)
-        self.zeroconf.close()        
+        self.zeroconf.close() 
+        self.server.close()       
 
 
 if __name__ == '__main__':
-    server = Server()
-    server.run()
+    ai = QuizGenerator()
+    quiz = ai.load("QUIZ - Aula 3 Sistemas Distribuidos Arquitectura.json")
+    
+    server = Server(quiz)
+    server.start()
