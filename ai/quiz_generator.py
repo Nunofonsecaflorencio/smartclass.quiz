@@ -1,6 +1,7 @@
 import google.generativeai as genai
 import json
 
+
 class QuizGenerator:
     def __init__(self) -> None:
 
@@ -31,39 +32,45 @@ class QuizGenerator:
     def _prompt(self, file_object):
         return self.model.generate_content([
             """
-            Create a comprehensive array of quizzes in JSON format, ensuring full coverage of the document's content. Each quiz should follow this structure:
+Create a comprehensive array of quizzes (at least 10 question) in JSON format, ensuring full coverage of the document's content. Each quiz should follow this structure:
 
-            - Each quiz must have exactly one question.
-            - Provide four unique and contextually relevant options per question.
-            - Specify the correct answer by providing the full text of the correct option.
+- Each quiz must have exactly one question.
+- Provide four unique and contextually relevant options per question.
+- Specify the correct answer by providing the full text of the correct option.
 
-            The JSON should contain an array of quiz objects, where each object has the following keys:
-            - "question": A string representing the question.
-            - "options": An array of four unique strings, each representing one of the options.
-            - "answer": A string with the full text of the correct option.
+The JSON should contain an object with the following keys:
+- "topic": A string representing the subject of the document.
+- "quizzes": An array of quiz objects, where each object has the following keys:
+  - "question": A string representing the question.
+  - "options": An array of four unique strings, each representing one of the options.
+  - "answer": A string with the full text of the correct option.
 
-            Ensure that:
-            1. The questions cover a wide range of topics or concepts found in the document, minimizing overlap.
-            2. All options are relevant to the topic and distinct.
-            3. If the document is long, generate as many quizzes as needed to cover all key concepts.
-            4. If only one quiz is generated, ensure that it is still returned within an array format.
+Ensure that:
+1. The questions cover a wide range of topics or concepts found in the document, minimizing overlap.
+2. All options are relevant to the topic and distinct.
+3. If the document is long, generate as many quizzes as needed to cover all key concepts.
+4. If only one quiz is generated, ensure that it is still returned within an array format.
 
-            Return the result as a JSON array, even if it contains only one quiz object. Avoid any additional text or titles.
+Return the result as a JSON object containing the "topic" and "quizzes" keys, even if the quizzes array contains only one quiz object. Avoid any additional text or titles.
 
-            Example of one quiz object within an array:
-            [
-                {
-                    "question": "What is the capital of France?",
-                    "options": [
-                        "Berlin",
-                        "Madrid",
-                        "Paris",
-                        "Rome"
-                    ],
-                    "answer": "Paris"
-                }
-            ]
+Example of the returned JSON object:
+{
+    "topic": "Geography",
+    "quizzes": [
+        {
+            "question": "What is the capital of France?",
+            "options": [
+                "Berlin",
+                "Madrid",
+                "Paris",
+                "Rome"
+            ],
+            "answer": "Paris"
+        }
+    ]
+}
 
-            Always use the language of the file.
+Always use the language of the file.
+
             """
             , file_object])
