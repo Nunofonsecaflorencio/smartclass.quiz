@@ -7,7 +7,7 @@ class Client(ServiceBrowser):
     def __init__(self) -> None:
         self.player_name = None
         
-        self.available_rooms = []
+        self.available_rooms = {}
         self.room_dicovered_callback = None
         self.stub = None
         self.channel = None
@@ -29,16 +29,21 @@ class Client(ServiceBrowser):
             port = info.port
             
             # Add the room information to available_rooms
-            self.available_rooms.append(room_code)
+            self.available_rooms[room_code] = {
+                'address': address,
+                'port': port
+            }
             if self.room_dicovered_callback:
                 self.room_dicovered_callback(room_code, self.available_rooms)
     
     
-    def connect_to_room(self, room):
+    def connect_to_room(self, room_code):
         if self.channel:
             self.channel.close()
+
+        address = self.available_rooms[room_code]['address'] 
+        port = self.available_rooms[room_code]['port'] 
         
-        room_code, address, port = room
         self.channel = grpc.insecure_channel(f'{address}:{port}')
         print(f"Conectado à Sala {room_code} ({address}:{port})")
         self.stub = pb2_grpc.SmartClassStub(self.channel)
@@ -48,20 +53,10 @@ class Client(ServiceBrowser):
         return self.available_rooms
 
     def update_service(self, zeroconf, type, name):
-        print(f"UPDATE {name}")
+        pass
     
-    def removeService(self, server, type, name):
-        print(f"REMOVE {name}")
-
     def remove_service(self, zeroconf, type, name):
-        service_info = zeroconf.get_service_info(type, name)
-        if service_info:
-            room_code = name.split(".")[1]
-            if room_code in self.available_rooms:
-                self.available_rooms.pop(room_code)
-                print(room_code)
-                if self.room_dicovered_callback:
-                    self.room_dicovered_callback(None, self.available_rooms)
+        pass
             
     
     def set_player_name(self, name):
@@ -72,7 +67,7 @@ class Client(ServiceBrowser):
             print("Ainda não se conectou à uma sala.")
             return
         response = self.stub.JoinRoom(pb2.JoinRoomRequest(player_name=self.player_name))
-        return response.joined, response.topic, response.game_timer, response.message
+        return response.joined, response.topic, response.quizzes_count, response.game_timer, response.message
 
     def quit(self):
         response = self.stub.ExitRoom(pb2.Player(player_name=self.player_name))
@@ -93,7 +88,10 @@ class Client(ServiceBrowser):
         ))
         
         return response.score, response.isOver
-        
+    
+    def close(self):
+        self.stop_room_discovery(self)
+        self.channel.close()
             
 
 if __name__ == '__main__':

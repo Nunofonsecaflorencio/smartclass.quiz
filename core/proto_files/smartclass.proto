@@ -18,6 +18,7 @@ message JoinRoomResponse {
   string topic = 2;
   int32 game_timer = 3;
   string message = 4;
+  int32 quizzes_count = 5;
 }
 
 message Player {

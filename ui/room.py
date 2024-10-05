@@ -9,7 +9,7 @@ class RoomScreen:
         self.server = server
         self.layout = [
             [sg.Text(self.server.quiz_topic, key='-TOPIC-',
-                     font=('Helvetica', 16), justification='center', size=(30, 1))],
+                     font=('Helvetica', 12), justification='center', size=(38, None))],
             [sg.Text("Ranking:", font=('Helvetica', 12))],
             [sg.Table(values=[], headings=['Nome', 'Pontos'], auto_size_columns=False, col_widths=[
                       30, 10], size=(40, 10), key='-TABLE-')],

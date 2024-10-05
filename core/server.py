@@ -49,6 +49,7 @@ class Server(pb2_grpc.SmartClassServicer):
         return pb2.JoinRoomResponse(
                 joined=True,
                 topic=self.quiz_topic,
+                quizzes_count=len(self.quizzes),
                 message=f"Joined to Room {self.room_code}. Wait for the Start!"
             )
     

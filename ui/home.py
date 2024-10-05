@@ -1,6 +1,5 @@
 import PySimpleGUI as sg
 import os
-import threading
 
 class HomeScreen:
     def __init__(self, callbacks) -> None:
@@ -10,10 +9,10 @@ class HomeScreen:
             [sg.HorizontalSeparator(color='gray')],
             [sg.Button('Documento para Quiz com IA', font='Helvetica 12', key='-AI-', size=(-1, 2), expand_x=True), sg.Stretch(),  sg.Button('Criar Sala', font='Helvetica 12', size=(-1, 2), expand_x=True)],
             [sg.HorizontalSeparator(color='gray')],
-            [sg.Text("Selecione uma sala:", font='Helvetica 12')],
-            [sg.Listbox([], font='Helvetica 12', key='-ROOM_LIST-', text_color='white', enable_events=True, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, expand_y=True, expand_x=True, size=(-1, 5))],
             [sg.Text("Digite o seu nome:", font='Helvetica 12')],
-            [sg.Input(key='-NAME-', text_color='white', justification='center', font='Helvetica 12', size=(40, 2), expand_x=True, expand_y=True), sg.Button('Entar na Sala', font='Helvetica 12', size=(-1, 2), expand_x=True)]
+            [sg.Input(key='-NAME-', text_color='white', justification='center', font='Helvetica 12', size=(40, 2), expand_x=True, expand_y=True), sg.Button('Entrar na Sala', disabled=True, font='Helvetica 12', size=(-1, 2), expand_x=True)],
+            [sg.Text("Selecione uma sala:", font='Helvetica 12')],
+            [sg.Listbox([], font='Helvetica 12', key='-ROOM_LIST-', text_color='white', enable_events=True, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, expand_y=True, expand_x=True, size=(-1, 5))]
         ]
         
         self.window = sg.Window('SmartClass.Quiz', self.layout)
@@ -22,6 +21,8 @@ class HomeScreen:
         self.client = self.callbacks['get_client']()
         self.client.start_room_discovery()
         self.client.room_dicovered_callback = self.update_listbox
+        
+        self.selected_room = None
 
     def show(self):
         while True:
@@ -31,18 +32,24 @@ class HomeScreen:
                 break
 
               # Handle button clicks
+            if event in ['-NAME-', '-ROOM_LIST-']:
+                if values['-NAME-'] and values['-ROOM_LIST-']:
+                    self.window['Entrar na Sala'].update(disabled=False)
+                else:
+                    self.window['Entrar na Sala'].update(disabled=True)
+              
             if event == '-AI-':
                 self.handle_ai_document()
             elif event == 'Criar Sala':
                 self.create_room()
             elif event == 'Entrar na Sala':
                 self.enter_room(values['-NAME-'], values['-ROOM_LIST-'])
-            elif event == '-ROOM_LIST-':
-                self.handle_room_selection(values['-ROOM_LIST-'])   
+         
+            
 
         self.window.close()
     def update_listbox(self, new_room, all_rooms):
-        self.window['-ROOM_LIST-'].update(values = all_rooms)
+        self.window['-ROOM_LIST-'].update(values = list(all_rooms))
         
     def handle_ai_document(self):
         # Ask user to select a file
@@ -75,11 +82,18 @@ class HomeScreen:
 
     def enter_room(self, name, room):
         # Logic for entering a room
+        room = room[0]
         print(f"User {name} is trying to enter the room {room}")
-
-    def handle_room_selection(self, selected_room):
-        # Logic when a room is selected from the listbox
-        if selected_room:
-            print(f"Room selected: {selected_room[0]}")
+        self.client.set_player_name(name)
+        self.client.connect_to_room(room)
+        
+        self.window.Hide()
+        joined, topic, quizzes_count, timer, message = self.client.join()
+        if joined:
+            # TODO Esperar a sala começão. Não começar imediatamente
+            sg.Popup(message)
+            self.callbacks['goto_game_screen'](self.client, topic, quizzes_count, timer)
         else:
-            print("No room selected")
+            sg.Popup(f"Erro: {message}")
+       
+        self.window.UnHide()
