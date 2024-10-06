@@ -15,6 +15,7 @@ class Server(pb2_grpc.SmartClassServicer):
         self.room_code = str(shortuuid.ShortUUID().random(length=4)).upper()
         self.players = {}
         
+        self.update_players_list = None
         
     def start(self):
         self._initialize_grpc_server()
@@ -44,6 +45,9 @@ class Server(pb2_grpc.SmartClassServicer):
             'index': 0,
         }
         
+        if self.update_players_list:
+            self.update_players_list(self.players)
+        
         print(f"Player {joinRoomRequest.player_name} joined!")
         
         return pb2.JoinRoomResponse(
@@ -70,8 +74,9 @@ class Server(pb2_grpc.SmartClassServicer):
         if Answer.isCorrect:
             player['score'] += 1
         player['index'] += 1
-        
-        print(player)
+
+        if self.update_players_list:
+            self.update_players_list(self.players)
         
         return pb2.GameStatus(
             isOver=player['index'] >= len(self.quizzes),

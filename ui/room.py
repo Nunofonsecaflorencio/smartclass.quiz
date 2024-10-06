@@ -1,41 +1,33 @@
 import PySimpleGUI as sg
 import threading
 
-import json
-
-
 class RoomScreen:
     def __init__(self, server) -> None:
         self.server = server
         self.layout = [
             [sg.Text(self.server.quiz_topic, key='-TOPIC-',
                      font=('Helvetica', 12), justification='center', size=(38, None))],
-            [sg.Text("Ranking:", font=('Helvetica', 12))],
-            [sg.Table(values=[], headings=['Nome', 'Pontos'], auto_size_columns=False, col_widths=[
-                      30, 10], size=(40, 10), key='-TABLE-')],
-            [sg.Text('Tempo (min):'), sg.Slider(range=(1, 60), default_value=10,
-                                                orientation='horizontal', size=(20, 20), key='-TIMER-')],
-            [sg.Button('Começar', button_color=('white', 'green'),
-                       size=(10, 1), key='-START-')]
+            [sg.Text("Ranking:", font=('Helvetica', 12), text_color='purple')],
+            [sg.Table(values=[], headings=['Nome', 'Pontos', 'Nota'], auto_size_columns=False, col_widths=[
+                      30, 10, 10], size=(None, 20), key='-TABLE-', cols_justification=['l', 'c', 'c'])],
+            [sg.Text(f"Código da Sala: {self.server.room_code}", font=('Helvetica', 10))],
+            [sg.Text(f"Quantidade de Questões: {len(self.server.quizzes)}", font=('Helvetica', 10))],
+            [sg.Text(f"Nota por Questão: {round(20 / len(self.server.quizzes), 2)}", font=('Helvetica', 10))],
         ]
 
         self.window = sg.Window('Quiz Room', self.layout, finalize=True)
         threading.Thread(target=self.server.start, daemon=True).start()
+        
+        self.server.update_players_list = self.update_topic_and_ranking
 
-    def update_topic_and_ranking(self, quiz_data):
-        self.window['-TOPIC-'].update(quiz_data.get('topic', ''))
-        self.window['-TABLE-'].update([[]])
-
-    def open_file():
-        file_path = sg.popup_get_file(
-            'Selecione o quiz', no_window=True, file_types=(('JSON Files', '*.json'),))
-
-        if file_path:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-            return data
-
-        return None
+    def update_topic_and_ranking(self, players):
+        rows = [[player, players[player]['score']] for player in players]
+        for row in rows:
+            marks = row[1] * 20 / len(self.server.quizzes)
+            row.append(round(marks, 2))
+        
+        rows.sort(key=lambda row: row[1])
+        self.window['-TABLE-'].update(values=rows)
 
     def show(self):
         while True:
@@ -44,15 +36,5 @@ class RoomScreen:
             if event == sg.WIN_CLOSED:
                 self.server.close()
                 break
-
-            if event == '-START-':
-                sg.popup('Jogo Iniciado', 'Tempo: {} minutos'.format(
-                    int(values['-TIMER-'])))
-                # TODO
-
-            if event == 'Criar Sala':
-                quiz_data = self.open_file()
-
-                if quiz_data:
-                    self.update_topic_and_ranking(quiz_data)
+         
         self.window.close()

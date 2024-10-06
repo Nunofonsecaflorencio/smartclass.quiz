@@ -91,7 +91,6 @@ class HomeScreen:
         joined, topic, quizzes_count, timer, message = self.client.join()
         if joined:
             # TODO Esperar a sala começão. Não começar imediatamente
-            sg.Popup(message)
             self.callbacks['goto_game_screen'](self.client, topic, quizzes_count, timer)
         else:
             sg.Popup(f"Erro: {message}")
