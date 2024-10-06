@@ -1,21 +1,27 @@
 import PySimpleGUI as sg
-import os
+import os, sys
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+ 
 class HomeScreen:
     def __init__(self, callbacks) -> None:
         sg.theme('Light Blue')
         self.layout = [
-            [sg.Stretch(), sg.Image(filename="./assets/logo-no-background.png", size=(-1, 200)), sg.Stretch()],
+            [sg.Stretch(), sg.Image(filename=resource_path("assets/logo-no-background.png"), size=(-1, 200)), sg.Stretch()],
             [sg.HorizontalSeparator(color='gray')],
             [sg.Button('Documento para Quiz com IA', font='Helvetica 12', key='-AI-', size=(-1, 2), expand_x=True), sg.Stretch(),  sg.Button('Criar Sala', font='Helvetica 12', size=(-1, 2), expand_x=True)],
             [sg.HorizontalSeparator(color='gray')],
             [sg.Text("Digite o seu nome:", font='Helvetica 12')],
             [sg.Input(key='-NAME-', text_color='white', justification='center', font='Helvetica 12', size=(40, 2), expand_x=True, expand_y=True), sg.Button('Entrar na Sala', disabled=True, font='Helvetica 12', size=(-1, 2), expand_x=True)],
             [sg.Text("Selecione uma sala:", font='Helvetica 12')],
-            [sg.Listbox([], font='Helvetica 12', key='-ROOM_LIST-', text_color='white', enable_events=True, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, expand_y=True, expand_x=True, size=(-1, 5))]
+            [sg.Listbox([], font='Helvetica 12', key='-ROOM_LIST-', text_color='white', enable_events=True, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, expand_y=True, expand_x=True, size=(-1, 5))],
+            [sg.Text("Authors: Nuno Fonseca & Belarmino Simão ©", justification='center', expand_x=True, font='Helvetica 8')],
         ]
         
-        self.window = sg.Window('SmartClass.Quiz', self.layout)
+        self.window = sg.Window('SmartClass.Quiz', self.layout, icon=resource_path("assets/smartclassquiz.ico"))
         self.callbacks = callbacks
         
         self.client = self.callbacks['get_client']()

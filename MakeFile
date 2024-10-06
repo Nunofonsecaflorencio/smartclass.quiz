@@ -6,3 +6,6 @@ compile:
 
 run:
 	python main.py
+
+exe:
+	pyinstaller .\main.spec

@@ -1,4 +1,10 @@
 import PySimpleGUI as sg
+import os, sys
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 
 class GameScreen:
@@ -20,7 +26,7 @@ class GameScreen:
                 'white', 'green'), size=(10, 2), key='-NEXT-')]
         ]
 
-        self.window = sg.Window('Quiz Game', self.layout, finalize=True)
+        self.window = sg.Window('Quiz Game', self.layout, finalize=True, icon=resource_path("assets/smartclassquiz.ico"))
 
     def check_answer(self):
         correct_answer = self.current_quiz['answer']
@@ -62,7 +68,7 @@ class GameScreen:
             event, values = self.window.read()
 
             if event == sg.WIN_CLOSED:
-                self.close()
+                self.client.close()
                 break
 
             if event == '-NEXT-':
@@ -73,28 +79,6 @@ class GameScreen:
                     sg.popup("Quiz Finalizado!",
                      f"Pontuação final: {self.score}/{self.quizzes_count}")
                     break
-            self.window.refresh()
+            
 
         self.window.close()
-
-
-# Testing UI
-# if __name__ == "__main__":
-#     quiz_data = {
-#         "topic": "Filosofia",
-#         "quizzes": [
-#             {
-#                 "question": "O que é a vida?",
-#                 "alternatives": ["Dor e sofrimento", "Potência que busca potência", "Felicidade", "Respirar"],
-#                 "correct": 1
-#             },
-#             {
-#                 "question": "Quem você ama?",
-#                 "alternatives": ["Vilma", "Maria", "Noelle", "Tsunade"],
-#                 "correct": 0
-#             }
-#         ]
-#     }
-#     player_name = "Belarmino"
-#     game_screen = GameScreen(quiz_data, player_name)
-#     game_screen.show()

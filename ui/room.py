@@ -1,5 +1,10 @@
 import PySimpleGUI as sg
-import threading
+import threading, sys, os
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 class RoomScreen:
     def __init__(self, server) -> None:
@@ -15,7 +20,7 @@ class RoomScreen:
             [sg.Text(f"Nota por Questão: {round(20 / len(self.server.quizzes), 2)}", font=('Helvetica', 10))],
         ]
 
-        self.window = sg.Window('Quiz Room', self.layout, finalize=True)
+        self.window = sg.Window('Quiz Room', self.layout, finalize=True, icon=resource_path("assets/smartclassquiz.ico"))
         threading.Thread(target=self.server.start, daemon=True).start()
         
         self.server.update_players_list = self.update_topic_and_ranking
