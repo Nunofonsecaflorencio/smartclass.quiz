@@ -90,25 +90,6 @@ class Client(ServiceBrowser):
         return response.score, response.isOver
     
     def close(self):
-        self.stop_room_discovery(self)
+        self.stop_room_discovery()
         self.channel.close()
             
-
-if __name__ == '__main__':
-    client = Client()
-    client.start_room_discovery()
-    client.new_room_dicovered_callback = lambda room, _: print(f"Room {room} discovered!")
-    time.sleep(5)
-    rooms = client.stop_room_discovery()
-    print(rooms)
-    if rooms:
-        client.connect_to_room(rooms[0])
-        client.set_player_name("Nuno Fonseca Florêncio")
-        client.join()
-        while True:
-            quiz = client.getQuiz()
-            s, o = client.submitAnswer(quiz, 'Uma arquitetura onde os componentes estão localizados em um único ponto central.')
-            print(s, o)
-            if o:
-                client.quit()
-                break
