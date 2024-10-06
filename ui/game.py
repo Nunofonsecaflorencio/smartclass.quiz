@@ -15,18 +15,12 @@ class GameScreen:
             [sg.Text(self.current_quiz['question'],
                      key='-QUESTION-', font=('Helvetica', 12), size=(40, None))],
              *[[sg.Radio(alt, "RADIO1", key=f'-ALT-{i}-')] for i, alt in enumerate(self.current_quiz['options'])],
-            [sg.Text(f"Pontos: {self.score}/{self.quizzes_count}",
+            [sg.Text(f"Pontos: {self.score}/{self.quizzes_count}", size=(None, 2), pad=(0, 5),
                      key='-SCORE-', font=('Helvetica', 12)), sg.Stretch(), sg.Button('Próximo', button_color=(
-                'white', 'green'), size=(10, 1), key='-NEXT-')]
+                'white', 'green'), size=(10, 2), key='-NEXT-')]
         ]
 
         self.window = sg.Window('Quiz Game', self.layout, finalize=True)
-
-    def get_current_question(self):
-        return self.quiz_data['quizzes'][self.current_question_index]['question']
-
-    def get_current_alternatives(self):
-        return self.quiz_data['quizzes'][self.current_question_index]['alternatives']
 
     def check_answer(self):
         correct_answer = self.current_quiz['answer']
@@ -54,7 +48,8 @@ class GameScreen:
         
         self.window['-QUESTION-'].update(self.current_quiz['question'])
         for i, alt in enumerate(self.current_quiz['options']):
-            self.window[f'-ALT-{i}-'].update(alt)
+            
+            self.window[f'-ALT-{i}-'].update(text=alt)
             # Resetando a seleção
             self.window[f'-ALT-{i}-'].update(value=False)
         self.window['-SCORE-'].update(
@@ -78,6 +73,7 @@ class GameScreen:
                     sg.popup("Quiz Finalizado!",
                      f"Pontuação final: {self.score}/{self.quizzes_count}")
                     break
+            self.window.refresh()
 
         self.window.close()
 
