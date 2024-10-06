@@ -35,7 +35,7 @@ class QuizGenerator:
     def _prompt(self, file_object):
         return self.model.generate_content([
             """
-Create a comprehensive array of quizzes (at least 10 question) in JSON format, ensuring full coverage of the document's content. Each quiz should follow this structure:
+Create a comprehensive array of quizzes in JSON format, with as many questions as possible (around 10 to 20), ensuring full coverage of the document's content. Each quiz should follow this structure:
 
 - Each quiz must have exactly one question.
 - Provide four unique and contextually relevant options per question.
